@@ -1,0 +1,79 @@
+diff -urN libelligator.orig/Makefile libelligator/Makefile
+--- libelligator.orig/Makefile	2015-01-21 20:25:59.827480918 +0000
++++ libelligator/Makefile	2015-01-21 20:31:42.687498546 +0000
+@@ -1,6 +1,6 @@
+-CXXFLAGS := -O2 -g -Wall -Werror -Wextra -fPIC -I./src
++CXXFLAGS := -O2 -g -Wall -Wextra -fPIC -I./src
+ LDFLAGS := -shared -Wl,-soname,$(SONAME)
+-TEST_LDFLAGS := -L. -lelligator -lgtest -lgtest_main
++TEST_LDFLAGS := -L. -lelligator -lgtest -lgtest_main -lpthread
+ 
+ SONAME = libelligator.so
+ SRCS = src/elligator/elligator.cc \
+diff -urN libelligator.orig/src/elligator/elligator.h libelligator/src/elligator/elligator.h
+--- libelligator.orig/src/elligator/elligator.h	2015-01-21 20:25:59.827480918 +0000
++++ libelligator/src/elligator/elligator.h	2015-01-21 20:38:41.887520098 +0000
+@@ -10,26 +10,57 @@
+ #ifndef ELLIGATOR_ELLIGATOR_H__
+ #define ELLIGATOR_ELLIGATOR_H__
+ 
+-#include <cstddef>
+ #include <stdint.h>
++#include <stdbool.h>
++
++/* __BEGIN_DECLS should be used at the beginning of your declarations,
++   so that C++ compilers don't mangle their names.  Use __END_DECLS at
++   the end of C declarations. */
++#undef __BEGIN_DECLS
++#undef __END_DECLS
++#undef __REF
++#ifdef __cplusplus
++# define __BEGIN_DECLS extern "C" {
++# define __END_DECLS }
++# define __REF &
++#else
++# define __BEGIN_DECLS /* empty */
++# define __END_DECLS /* empty */
++# define __REF /* empty */
++#endif
++
++
++#ifdef __cplusplus
++#include <cstddef>
+ 
+ namespace elligator {
+ 
+ const std::size_t PublicKeyLength = 32;
+ const std::size_t PrivateKeyLength = 32;
+ const std::size_t RepresentativeLength = 32;
++#else
++# define PublicKeyLength		32
++# define	PrivateKeyLength	32
++# define RepresentativeLength		32
++#endif
+ 
+ typedef uint8_t PublicKey[PublicKeyLength];
+ typedef uint8_t PrivateKey[PrivateKeyLength];
+ typedef uint8_t Representative[RepresentativeLength];
+ 
+-bool ScalarBaseMult(PublicKey& publicKey,
+-                    Representative& representative,
+-                    const PrivateKey& privateKey);
++__BEGIN_DECLS
++
++bool ScalarBaseMult(PublicKey __REF publicKey,
++                    Representative __REF representative,
++                    const PrivateKey __REF privateKey);
+ 
+-void RepresentativeToPublicKey(PublicKey& publicKey,
+-                               const Representative& representative);
++void RepresentativeToPublicKey(PublicKey __REF publicKey,
++                               const Representative __REF representative);
+ 
++__END_DECLS
++
++#ifdef __cplusplus
+ } // namespace elligator
++#endif
+ 
+ #endif

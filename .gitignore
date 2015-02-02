@@ -1,0 +1,5 @@
+*.o
+TAGS
+libelligator
+libelligator.orig
+build
