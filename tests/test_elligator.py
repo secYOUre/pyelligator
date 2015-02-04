@@ -9,20 +9,35 @@ class TestElligator(unittest.TestCase):
     def test_genkey(self):
         for _ in range(1024):
             while True:
-                private = bytearray(urandom(32))
+                private = urandom(32)
                 (v, public, representative) = elligator.scalarbasemult(private)
                 if v:
                     break
 
     def test_public(self):
         while True:
-            private = bytearray(urandom(32))
+            private = urandom(32)
             (v, public, representative) = elligator.scalarbasemult(private)
             if v:
                 break
 
         public2 = elligator.representativetopublic(representative)
         self.assertEqual(public, public2)
+
+    def test_nacl_scalarmult_curve25519_base(self):
+        try:
+            import nacl
+
+            while True:
+                private = urandom(32)
+                (v, public, representative) = elligator.scalarbasemult(private)
+                if v:
+                    break
+
+            public2 = nacl.crypto_scalarmult_curve25519_base(private)
+            self.assertEqual(public, public2)
+        except ImportError:
+            raise ImportError('Can\'t import TweetNaCl')
 
     def test_kat(self):
         kat_vectors = [

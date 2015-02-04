@@ -18,7 +18,7 @@ install: build
 	sudo python setup.py install
 
 test: build
-	python test/test_elligator.py
+	python tests/test_elligator.py
 
 clean:
 	python setup.py clean
