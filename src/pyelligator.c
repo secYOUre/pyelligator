@@ -16,6 +16,11 @@ static PyObject *elligator_scalarbasemult(PyObject *self, PyObject *args)
     {
         uint8_t *pub_key = PyMem_Malloc(32); // public key
         uint8_t *representative = PyMem_Malloc(32); // representative value
+	if (    (pub_key == (uint8_t *) NULL) \
+             || (representative == (uint8_t *) NULL)) {
+        	return PyErr_NoMemory();
+	}
+
 	bool valid = ScalarBaseMult(pub_key, representative, private.buf);
 
 	PyObject *rslt = PyTuple_New(3);
@@ -23,6 +28,8 @@ static PyObject *elligator_scalarbasemult(PyObject *self, PyObject *args)
 	PyTuple_SetItem(rslt, 0, valid_flag);
 	PyTuple_SetItem(rslt, 1, Py_BuildValue("y#", pub_key, 32));
 	PyTuple_SetItem(rslt, 2, Py_BuildValue("y#", representative, 32));
+	if (pub_key) { PyMem_Free(pub_key); }
+	if (representative) { PyMem_Free(representative); }
 	return rslt;
     }
 
@@ -37,8 +44,13 @@ static PyObject *elligator_representativetopublic(PyObject *self, PyObject *args
     if (PyArg_ParseTuple(args, "y*", &repr))
     {
         uint8_t *public = PyMem_Malloc(32); // public key
+	if (public == (uint8_t *) NULL) { 
+		return PyErr_NoMemory();
+	}
 	RepresentativeToPublicKey(public, repr.buf);
-        return Py_BuildValue("y#", public, 32);
+	PyObject *rslt = Py_BuildValue("y#", public, 32);
+	if (public) { PyMem_Free(public); }
+	return rslt;
     }
 
     return 0;
@@ -92,6 +104,11 @@ static PyObject *elligator_scalarbasemult(PyObject *self, PyObject *args)
     {
         uint8_t *pub_key = PyMem_Malloc(32); // public key
         uint8_t *representative = PyMem_Malloc(32); // representative value
+	if (    (pub_key == (uint8_t *) NULL) \
+             || (representative == (uint8_t *) NULL)) {
+        	return PyErr_NoMemory();
+	}
+
 	bool valid = ScalarBaseMult(pub_key, representative, private.buf);
 
 	PyObject *rslt = PyTuple_New(3);
@@ -99,6 +116,8 @@ static PyObject *elligator_scalarbasemult(PyObject *self, PyObject *args)
 	PyTuple_SetItem(rslt, 0, valid_flag);
 	PyTuple_SetItem(rslt, 1, Py_BuildValue("s#", pub_key, 32));
 	PyTuple_SetItem(rslt, 2, Py_BuildValue("s#", representative, 32));
+	if (pub_key) { PyMem_Free(pub_key); }
+	if (representative) { PyMem_Free(representative); }
 	return rslt;
     }
 
@@ -113,8 +132,13 @@ static PyObject *elligator_representativetopublic(PyObject *self, PyObject *args
     if (PyArg_ParseTuple(args, "s*", &repr))
     {
         uint8_t *public = PyMem_Malloc(32); // public key
+	if (public == (uint8_t *) NULL) { 
+		return PyErr_NoMemory();
+	}
 	RepresentativeToPublicKey(public, repr.buf);
-        return Py_BuildValue("s#", public, 32);
+	PyObject *rslt = Py_BuildValue("s#", public, 32);
+	if (public) { PyMem_Free(public); }
+	return rslt;
     }
 
     return 0;
